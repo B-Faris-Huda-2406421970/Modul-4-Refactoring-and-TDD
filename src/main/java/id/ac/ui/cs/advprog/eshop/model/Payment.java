@@ -1,5 +1,7 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
+
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Map;
@@ -17,7 +19,7 @@ public class Payment {
         this.id = id;
         this.method = method;
         this.paymentData = paymentData;
-        this.status = validatePayment() ? "SUCCESS" : "REJECTED";
+        this.status = validatePayment() ? PaymentStatus.SUCCESS.getValue() : PaymentStatus.REJECTED.getValue();
     }
 
     private boolean validatePayment() {
