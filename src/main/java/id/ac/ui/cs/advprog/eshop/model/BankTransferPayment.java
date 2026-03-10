@@ -8,14 +8,12 @@ public class BankTransferPayment extends Payment {
 
     public BankTransferPayment(String id, Map<String, String> paymentData) {
         super(id, "BANK_TRANSFER", paymentData);
+        this.setStatus(validateBankTransfer() ? PaymentStatus.SUCCESS.getValue() : PaymentStatus.REJECTED.getValue());
+    }
 
-        String bankName = paymentData.get("bankName");
-        String refCode = paymentData.get("referenceCode");
-
-        if (bankName == null || bankName.isEmpty() || refCode == null || refCode.isEmpty()) {
-            this.setStatus(PaymentStatus.REJECTED.getValue());
-        } else {
-            this.setStatus(PaymentStatus.SUCCESS.getValue());
-        }
+    private boolean validateBankTransfer() {
+        String bankName = this.getPaymentData().get("bankName");
+        String refCode = this.getPaymentData().get("referenceCode");
+        return bankName != null && !bankName.isEmpty() && refCode != null && !refCode.isEmpty();
     }
 }
