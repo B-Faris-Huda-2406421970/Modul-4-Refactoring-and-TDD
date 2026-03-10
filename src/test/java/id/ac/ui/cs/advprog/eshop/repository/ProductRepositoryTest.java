@@ -21,12 +21,11 @@ class ProductRepositoryTest {
     String testProductName2 = "Sampo Cap Usep";
     int testProductQuantity2 = 50;
 
-    @InjectMocks
     ProductRepository productRepository;
 
     @BeforeEach
     void setUp(){
-
+        productRepository = new ProductRepositoryImpl();
     }
 
     void setupTestProduct1(Product product){
