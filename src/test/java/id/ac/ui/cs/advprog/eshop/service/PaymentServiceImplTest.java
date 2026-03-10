@@ -158,4 +158,20 @@ class PaymentServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(payment.getId(), result.get(0).getId());
     }
+
+    @Test
+    void testSetStatusOrderIsNull() {
+        paymentDataBankTransfer.put("orderId", "invalid-id");
+        Payment payment = new Payment("1", "BANK_TRANSFER", paymentDataBankTransfer);
+
+        when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
+        when(orderRepository.findById("invalid-id")).thenReturn(null);
+
+        Payment result = paymentService.setStatus(payment, PaymentStatus.SUCCESS.getValue());
+
+        assertEquals(PaymentStatus.SUCCESS.getValue(), result.getStatus());
+        verify(paymentRepository, times(1)).save(payment);
+        verify(orderRepository, times(1)).findById("invalid-id");
+        verify(orderRepository, never()).save(any(Order.class));
+    }
 }

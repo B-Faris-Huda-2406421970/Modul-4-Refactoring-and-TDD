@@ -53,7 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         if (PaymentStatus.SUCCESS.getValue().equals(status)) {
             order.setStatus(OrderStatus.SUCCESS.getValue());
-        } else if (PaymentStatus.REJECTED.getValue().equals(status)) {
+        } else {
             order.setStatus(OrderStatus.FAILED.getValue());
         }
         orderRepository.save(order);
