@@ -1,17 +1,12 @@
-# Module 1
+# Module 4
 
-## Reflection 1
-Clean code principles yang sudah saya implementasikan adalah:
-1. Meaningful names: Menggunakan nama variabel yang maknanya jelas. Contoh: productId, updateProduct, dan productName.
-2. Single Responsibility: Suatu fungsi melakukan satu hal saja. Contoh: update() pada ProductServiceImpl.java hanya melakukan satu hal yaitu menyuruh productRepository untuk melakukan update pada suatu product.
-3. Dont Repeat Yourself (DRY): Tidak mengulangi logic yang sama dengan membuat suatu fungsi. Contoh: Fungsi findById() pada ProductRepository.java yang mencari suatu product berdasarkan ID. Jika saya ingin mencari suatu product dengan ID tertentu, saya hanya perlu memanggil fungsi tersebut tanpa perlu membuat ulang kode pencarian product dengan ID tertentu.
-4. Small functions: Fungsi-fungsi yang saya buat pendek (tidak lebih dari 20 baris)
+## Reflection
 
-Secure coding principles yang sudah saya implementasikan adalah output encoding. Contohnya adalah menggunakan th:text pada Thymeleaf yang secara otomatis melakukan encoding saat menampilkan data ke HTML. Penting untuk mencegah serangan XSS.
+1. Pertanyaan refleksi dari Percival adalah apakah tes yang kita buat mencakup tiga objektif utama yang perlu dievaluasi saat testing. Ketiga objektif tersebut adalah correctness (kebenaran), maintainability (mudah dijaga), dan productive workflow (flow pekerjaan yang produktif). Menurut saya, flow TDD yang diberikan pada tutorial sudah memenuhi ketiga objektif utama tersebut dan berguna dalam proyek. Tes-tes yang dimasukkan sudah mengcover 100% dari  OrderRepository dan OrderServiceImpl sehingga dari segi correctness sudah baik. Selain itu, kode yang dibuat juga mudah di-maintain karena mengikuti prinsip SOLID. Meskipun terasa lama, flow TDD tersebut juga produktif karena kita bisa memastikan bahwa kode yang dibuat harus berhasil melalui tes yang kita buat.
 
-Hal yang bisa di-improve dari kode saya adalah melakukan input validation dan sanitasi agar tidak terjadi crash/error.
-
-## Reflection 2
-1. Rasanya melelahkan untuk membuat banyak unit test, tetapi membuat saya lebih yakin bahwa kode yang saya buat rigid. Menurut saya, jumlah unit test yang perlu dibuat dalam suatu kelas bergantung pada jumlah method yang ada di kelas tersebut, banyaknya percabangan yang ada pada masing-masing method, dan kemungkinan input yang beragam baik yang terlihat normal maupun yang aneh (misal positif, negatif, atau non-angka untuk input angka). Untuk memastikan apakah unit test sudah cukup untuk memverifikasi program kita, kita bisa melihat code coverage yang dihasilkan oleh unit tests tersebut. Apabila code coverage sudah besar (misal > 90%), kita bisa cukup yakin bahwa program tersebut sudah benar untuk kasus-kasus yang telah kita buat. Jika kode saya memiliki coverage 100%, belum tentu kode saya tidak memiliki bug atau error. Bisa jadi saya tidak terpikir kasus yang membuat kode tersebut menjadi error seperti belum validasi input, masalah null pointer, atau suatu bug yang sangat spesifik.
-
-2. Menurut saya, kode tersebut kurang "bersih". Pemisahan kelas Java juga mengurangi kualitas kode. Penyebabnya adalah karena ada kesamaan prosedur setup dan variabel umum yang digunakan oleh keduanya. Contohnya adalah penggunaan base URL yang sama (misal localhost:8080/product). Selain itu, keduanya juga melakukan functional test terhadap Product sehingga lebih baik disatukan saja dalam satu file yang sama. Hal ini sesuai dengan salah satu clean code principles yaitu prinsip Dont Repeat Yourself (DRY).
+2. Menurut saya, tes yang dibuat sudah memenuhi prinsip FIRST. Prinsip-prinsip yang dipenuhi:
+- Fast: Testing bisa dilakukan dengan cepat (sekitar 10 detik untuk kedua file tersebut).
+- Independent: Setiap tes yang ada independen dari tes lainnya. Contohnya adalah dengan menggunakan @Test yang independen satu sama lain dan @BeforeEach untuk inisialisasi ulang data (setup).
+- Repeatable: Testing bisa diulang dan memberikan hasil yang sama juga untuk kondisi yang sama.
+- Self-validating: Menggunakan assertions dari JUnit seperti assertEquals, assertNull, dan lainnya sesuai pada objek yang ingin dites. Jika ada kesalahan, kita bisa tau bagian mana yang salah berdasarkan assertion tersebut.
+- Thorough and Timely: Menguji happy path seperti testCreateOrder() dengan create order yang valid. Pengujian juga dilakukan untuk unhappy path seperti testFindByIdIfNotFound() yang melakukan pencarian berdasarkan ID untuk ID yang tidak ada pada repository.
