@@ -12,35 +12,32 @@ public class Payment {
         this.id = id;
         this.method = method;
         this.paymentData = paymentData;
+        this.status = validatePayment() ? "SUCCESS" : "REJECTED";
+    }
 
-        if (method.equals("VOUCHER")) {
-            String voucherCode = paymentData.get("voucherCode");
-            if (voucherCode != null && voucherCode.length() == 16 && voucherCode.startsWith("ESHOP")) {
-                int numCount = 0;
-                for (int i = 0; i < voucherCode.length(); i++) {
-                    if (Character.isDigit(voucherCode.charAt(i))) {
-                        numCount++;
-                    }
-                }
-                if (numCount == 8) {
-                    this.status = "SUCCESS";
-                } else {
-                    this.status = "REJECTED";
-                }
-            } else {
-                this.status = "REJECTED";
-            }
-        } else if (method.equals("BANK_TRANSFER")) {
-            String bankName = paymentData.get("bankName");
-            String refCode = paymentData.get("referenceCode");
-            if (bankName == null || bankName.isEmpty() || refCode == null || refCode.isEmpty()) {
-                this.status = "REJECTED";
-            } else {
-                this.status = "SUCCESS";
-            }
+    private boolean validatePayment() {
+        if ("VOUCHER".equals(method)) {
+            return validateVoucher();
+        } else if ("BANK_TRANSFER".equals(method)) {
+            return validateBankTransfer();
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    private boolean validateVoucher() {
+        String voucherCode = paymentData.get("voucherCode");
+        if (voucherCode == null || voucherCode.length() != 16 || !voucherCode.startsWith("ESHOP")) {
+            return false;
+        }
+        long numCount = voucherCode.chars().filter(Character::isDigit).count();
+        return numCount == 8;
+    }
+
+    private boolean validateBankTransfer() {
+        String bankName = paymentData.get("bankName");
+        String refCode = paymentData.get("referenceCode");
+        return bankName != null && !bankName.isEmpty() && refCode != null && !refCode.isEmpty();
     }
 
     public String getId() {
