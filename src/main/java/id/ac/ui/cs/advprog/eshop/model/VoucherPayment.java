@@ -8,22 +8,15 @@ public class VoucherPayment extends Payment {
 
     public VoucherPayment(String id, Map<String, String> paymentData) {
         super(id, "VOUCHER", paymentData);
+        this.setStatus(validateVoucher() ? PaymentStatus.SUCCESS.getValue() : PaymentStatus.REJECTED.getValue());
+    }
 
-        String voucherCode = paymentData.get("voucherCode");
-        if (voucherCode != null && voucherCode.length() == 16 && voucherCode.startsWith("ESHOP")) {
-            int numCount = 0;
-            for (int i = 0; i < voucherCode.length(); i++) {
-                if (Character.isDigit(voucherCode.charAt(i))) {
-                    numCount++;
-                }
-            }
-            if (numCount == 8) {
-                this.setStatus(PaymentStatus.SUCCESS.getValue());
-            } else {
-                this.setStatus(PaymentStatus.REJECTED.getValue());
-            }
-        } else {
-            this.setStatus(PaymentStatus.REJECTED.getValue());
+    private boolean validateVoucher() {
+        String voucherCode = this.getPaymentData().get("voucherCode");
+        if (voucherCode == null || voucherCode.length() != 16 || !voucherCode.startsWith("ESHOP")) {
+            return false;
         }
+        long numCount = voucherCode.chars().filter(Character::isDigit).count();
+        return numCount == 8;
     }
 }
