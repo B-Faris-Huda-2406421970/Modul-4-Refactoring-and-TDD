@@ -1,10 +1,15 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import java.util.Map;
 
+@Getter
 public class Payment {
     private String id;
     private String method;
+
+    @Setter
     private String status;
     private Map<String, String> paymentData;
 
@@ -38,25 +43,5 @@ public class Payment {
         String bankName = paymentData.get("bankName");
         String refCode = paymentData.get("referenceCode");
         return bankName != null && !bankName.isEmpty() && refCode != null && !refCode.isEmpty();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Map<String, String> getPaymentData() {
-        return paymentData;
     }
 }
