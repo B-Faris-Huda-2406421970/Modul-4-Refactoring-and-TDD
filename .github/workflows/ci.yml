@@ -1,0 +1,57 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test-and-analyze:
+    name: Test and Analyze
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out the Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java toolchain
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "gradle"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run unit tests
+        run: ./gradlew test
+
+      - name: Run PMD analysis
+        uses: pmd/pmd-github-action@v2
+        id: pmd
+        with:
+          version: '6.55.0'
+          sourcePath: 'src/main/java'
+          rulesets: 'rulesets/java/quickstart.xml,ruleset.xml'
+
+      - name: Fail build if there are violations
+        if: steps.pmd.outputs.violations != 0
+        run: exit 1
+
+  deploy:
+    name: Deploy to Koyeb
+    needs: test-and-analyze
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Koyeb CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/koyeb/koyeb-cli/master/install.sh | sh
+          echo "/home/runner/.koyeb/bin" >> $GITHUB_PATH
+
+      - name: Trigger redeploy on Koyeb
+        env:
+          KOYEB_TOKEN: ${{ secrets.KOYEB_API_TOKEN }}
+        run: |
+          koyeb service redeploy fragile-calypso/modul-1-coding-standards --token $KOYEB_TOKEN
