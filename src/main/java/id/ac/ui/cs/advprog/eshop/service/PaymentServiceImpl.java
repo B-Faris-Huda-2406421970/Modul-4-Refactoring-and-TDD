@@ -6,7 +6,6 @@ import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
 import id.ac.ui.cs.advprog.eshop.repository.OrderRepository;
 import id.ac.ui.cs.advprog.eshop.repository.PaymentRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,20 +36,27 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setStatus(status);
         paymentRepository.save(payment);
-
-        String orderId = payment.getPaymentData().get("orderId");
-        if (orderId != null) {
-            Order order = orderRepository.findById(orderId);
-            if (order != null) {
-                if (PaymentStatus.SUCCESS.getValue().equals(status)) {
-                    order.setStatus(OrderStatus.SUCCESS.getValue());
-                } else if (PaymentStatus.REJECTED.getValue().equals(status)) {
-                    order.setStatus(OrderStatus.FAILED.getValue());
-                }
-                orderRepository.save(order);
-            }
-        }
+        updateOrderStatus(payment, status);
         return payment;
+    }
+
+    private void updateOrderStatus(Payment payment, String status) {
+        String orderId = payment.getPaymentData().get("orderId");
+        if (orderId == null) {
+            return;
+        }
+
+        Order order = orderRepository.findById(orderId);
+        if (order == null) {
+            return;
+        }
+
+        if (PaymentStatus.SUCCESS.getValue().equals(status)) {
+            order.setStatus(OrderStatus.SUCCESS.getValue());
+        } else if (PaymentStatus.REJECTED.getValue().equals(status)) {
+            order.setStatus(OrderStatus.FAILED.getValue());
+        }
+        orderRepository.save(order);
     }
 
     @Override
